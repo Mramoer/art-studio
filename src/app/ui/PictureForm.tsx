@@ -1,17 +1,10 @@
 import Image from 'next/image';
 import { useState, ChangeEvent, FormEvent, FormEventHandler } from 'react';
 
-interface Art {
-	name: string;
-	description: string;
-	file: string;
-}
-
 const PictureForm = () => {
 	const [getFile, setGetFile] = useState<string | null>(null);
 	const [getName, setGetName] = useState<string>('');
 	const [getDescription, setGetDescription] = useState<string>('');
-	const [artGallery, setArtGallery] = useState<Art[]>([]);
 
 	const handleDescription = (e: ChangeEvent<HTMLInputElement>) => {
 		setGetDescription(e.target.value);
@@ -27,21 +20,37 @@ const PictureForm = () => {
 		}
 	};
 
-	const handleSubmit = () => {
-		if (getFile) {
-			const newArt: Art = {
-				name: getName,
+	const handleSubmit = async (e: FormEvent) => {
+		e.preventDefault();
+
+		if (getFile && getName && getDescription) {
+			const newPost = {
+				title: getName,
+				content: getFile,
 				description: getDescription,
-				file: getFile,
 			};
-			setArtGallery([...artGallery, newArt]);
-			console.log('Файл не указан');
+
+			const response = await fetch('/api/getPosts', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(newPost),
+			});
+			if (response.ok) {
+			} else {
+				console.log('Error occured while creating posts');
+			}
+		} else {
+			console.log('Заполните все поля');
 		}
 	};
 
 	return (
 		<div>
-			<form action='submit'>
+			<form
+				action='submit'
+				onSubmit={handleSubmit}>
 				<p>
 					<label htmlFor='name'>Название:</label>
 					<input
@@ -65,30 +74,9 @@ const PictureForm = () => {
 						type='file'
 					/>
 				</p>
-				<button
-					type='button'
-					onClick={handleSubmit}>
-					Опубликовать
-				</button>
+				<button type='button'>Опубликовать</button>
 			</form>
-
-			{artGallery.map((art: Art, index) => {
-				return (
-					<div key={index}>
-						<h1>{art.name}</h1>
-						<p>{art.description}</p>
-						<Image
-							height={300}
-							width={500}
-							layout='responsible'
-							src={art.file}
-							alt='image'
-						/>
-					</div>
-				);
-			})}
 		</div>
 	);
 };
-
 export default PictureForm;
