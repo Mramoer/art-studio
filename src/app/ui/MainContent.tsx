@@ -1,41 +1,38 @@
-import { useUser } from '@auth0/nextjs-auth0/client';
-import PictureForm from './PictureForm';
-import { GetServerSideProps } from 'next';
-import { PrismaClient, Post } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import Image from 'next/image';
+import Link from 'next/link';
 
-interface MainContentProps {
-	posts: Post[];
-}
-const prisma = new PrismaClient();
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getPosts = async () => {
+	const prisma = new PrismaClient();
 	const posts = await prisma.post.findMany();
-	return {
-		props: { posts: posts ?? [] },
-	};
+	await prisma.$disconnect();
+	return posts;
 };
 
-const MainContent: React.FC<MainContentProps> = ({ posts }) => {
-	const mymass = [
-		{
-			id: '1faaww13',
-		},
-	];
-	const { user } = useUser();
+const MainContent = async () => {
+	const posts = await getPosts();
 	console.log(posts);
 	return (
 		<>
-			<div>{user?.name === 'Mramoer' && <PictureForm />}</div>
+			{}
 			<div>
-				{posts.map((post) => {
-					return (
-						<div key={post.id}>
-							<h1>{post.title}</h1>
-							<h2>{post.content}</h2>
-							<p>{post.description}</p>
-						</div>
-					);
-				})}
+				<Link href={'/add-post'}>Создать новый пост</Link>
+				<div>
+					{posts.map((post) => {
+						return (
+							<div key={post.id}>
+								<h1>{post.title}</h1>
+								<h2>{post.description}</h2>
+								<Image
+									src={post.content}
+									alt='image should be here'
+									width={500}
+									height={300}
+								/>
+							</div>
+						);
+					})}
+				</div>
 			</div>
 		</>
 	);

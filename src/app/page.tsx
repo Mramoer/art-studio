@@ -1,7 +1,7 @@
-'use client';
-import Image from 'next/image';
 import Footer from './ui/Footer';
 import MainContent from './ui/MainContent';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import Link from 'next/link';
 
 export default function Home() {
 	return (
