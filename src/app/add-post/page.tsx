@@ -1,6 +1,9 @@
 'use client';
 import React, { useState, ChangeEvent, FormEvent, useRef } from 'react';
+import { WithContext as ReactTags } from 'react-tag-input';
+import type { Tag } from '../../../node_modules/react-tag-input/types/components/SingleTag.d.ts';
 import { useUser } from '@auth0/nextjs-auth0/client';
+
 import Link from 'next/link';
 
 const PictureForm = () => {
@@ -8,6 +11,7 @@ const PictureForm = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [title, setTitle] = useState<string>('');
 	const [description, setDescription] = useState<string>('');
+	const [tags, setTags] = React.useState<Tag[]>([]);
 
 	const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setDescription(e.target.value);
@@ -15,6 +19,14 @@ const PictureForm = () => {
 
 	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
 		setTitle(e.target.value);
+	};
+
+	const handleAddition = (tag: Tag) => {
+		setTags([...tags, tag]);
+	};
+
+	const handleDelete = (i: number) => {
+		setTags(tags.filter((tag, index) => index !== i));
 	};
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -27,17 +39,15 @@ const PictureForm = () => {
 		}
 
 		const formData = new FormData();
-		console.log(title);
-		console.log(description);
-		console.log(selectedFile);
-		formData.append('file', selectedFile);
+		const stringTags = tags.map((tag) => {
+			return tag.text;
+		});
+		formData.set('file', selectedFile);
 		formData.set('title', title);
 		formData.set('description', description);
+		formData.set('tags', stringTags.join());
+		console.log(stringTags);
 
-		for (let pair of formData.entries()) {
-			console.log(pair[0] + ', ' + pair[1]);
-		}
-		console.log(formData);
 		try {
 			const response = await fetch('/api/get-posts', {
 				method: 'POST',
@@ -85,6 +95,13 @@ const PictureForm = () => {
 						/>
 					</p>
 					<button type='submit'>Опубликовать</button>
+					<ReactTags
+						tags={tags}
+						handleDelete={handleDelete}
+						handleAddition={handleAddition}
+						inputFieldPosition='inline'
+						autocomplete
+					/>
 				</form>
 			) : (
 				<>

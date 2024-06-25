@@ -19,4 +19,5 @@ model Post {
   title     String   @db.VarChar(255)
   description String
   content   String
+  tags String
 }

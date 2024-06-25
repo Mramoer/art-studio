@@ -1,70 +1,68 @@
 import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import type { NextApiResponse, NextApiRequest } from 'next';
-import { uploadFile } from '../../../../middleware';
-import router from '../../../../middleware';
 
 const prisma = new PrismaClient();
 
-router.post(
-	async (
-		req: NextApiRequest & { file?: Express.Multer.File },
-		res: NextApiResponse
-	) => {
-		const pathCloudinary =
-			'https://api.cloudinary.com/v1_1/dibep0qk1/image/upload';
+export const POST = async (req: NextRequest) => {
+	const pathCloudinary =
+		'https://api.cloudinary.com/v1_1/dibep0qk1/image/upload';
+	try {
+		const data = await req.formData();
+		const file: File | null = data.get('file') as unknown as File;
+		const description: string | undefined = data.get(
+			'description'
+		) as unknown as string;
+		const title: string | undefined = data.get('title') as unknown as string;
+		const tags: string | undefined = data.get('tags') as unknown as string;
+		const parsedTags = JSON.parse(tags as string);
 
-		try {
-			const { title, description } = req.body;
-			console.log(title, description);
-
-			const file = req.file;
-			if (!file) {
-				throw new Error('No file uploaded');
-			}
-
-			const formDataCloudinary = new FormData();
-			formDataCloudinary.append(
-				'file',
-				new Blob([file.buffer], { type: file.mimetype }),
-				file.originalname
-			);
-			formDataCloudinary.append('upload_preset', 'z0wei8ze');
-
-			const uploadResponse = await fetch(pathCloudinary, {
-				method: 'POST',
-				body: formDataCloudinary,
-			});
-
-			if (!uploadResponse.ok) {
-				throw new Error(
-					`Failed to upload file to Cloudinary: ${uploadResponse.statusText}`
-				);
-			}
-
-			const uploadResult = await uploadResponse.json();
-
-			const result = await prisma.post.create({
-				data: {
-					title,
-					description,
-					content: uploadResult.secure_url,
-				},
-			});
-
-			await prisma.$disconnect();
-
-			return NextResponse.json({ result });
-		} catch (error: any) {
-			console.error(error);
-			await prisma.$disconnect();
-			return NextResponse.json({ error: error.message }, { status: 500 });
+		console.log(title, description, file, tags);
+		if (!file) {
+			throw new Error('No file uploaded');
 		}
+		const fileBytes = await file.arrayBuffer();
+		const blob = new Blob([fileBytes], { type: file.type });
+
+		console.log('Received:', { title, description, file, tags });
+
+		if (!file) {
+			throw new Error('No file uploaded');
+		}
+
+		const formDataCloudinary = new FormData();
+		formDataCloudinary.append('file', blob, file.name);
+		formDataCloudinary.append('upload_preset', 'sxph9iev');
+
+		const uploadResponse = await fetch(pathCloudinary, {
+			method: 'POST',
+			body: formDataCloudinary,
+		});
+
+		if (!uploadResponse.ok) {
+			const uploadErrorText = await uploadResponse.text();
+			throw new Error(
+				`Failed to upload file to Cloudinary: ${uploadErrorText}`
+			);
+		}
+
+		const uploadResult = await uploadResponse.json();
+
+		const result = await prisma.post.create({
+			data: {
+				title,
+				description,
+				content: uploadResult.secure_url,
+				tags: parsedTags,
+			},
+		});
+
+		await prisma.$disconnect();
+
+		return NextResponse.json({ result });
+	} catch (error: any) {
+		console.error('Error:', error.message);
+		await prisma.$disconnect();
+		return NextResponse.json({ error: error.message }, { status: 500 });
 	}
-);
-export default router.handler({
-	onError: (err: any, req, res) => {
-		console.error(err.stack);
-		res.status(err.statusCode || 500).end(err.message);
-	},
-});
+};

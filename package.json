@@ -23,7 +23,9 @@
     "next-connect": "^1.0.0-next.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-tag-input": "^6.10.2",
     "uuid": "^9.0.1",
+    "uuidv4": "^6.2.13",
     "vercel": "^34.2.7"
   },
   "devDependencies": {

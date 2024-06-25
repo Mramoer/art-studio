@@ -5,7 +5,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 
 const Footer = () => {
-	const { user, error, isLoading } = useUser();
+	const { user } = useUser();
 	return (
 		<div className='bg-black text-white h-14 w-full flex items-center'>
 			<Image
@@ -46,6 +46,11 @@ const Footer = () => {
 					'https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg'
 				}
 			/>
+			{user?.name === 'Mramoer' ? (
+				<Link href={'/add-post'}>Создать новый пост</Link>
+			) : (
+				''
+			)}
 		</div>
 	);
 };
