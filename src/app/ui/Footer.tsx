@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { Search } from '@geist-ui/icons';
+import { Plus, Search } from '@geist-ui/icons';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 
@@ -34,7 +34,13 @@ const Footer = () => {
 					Login
 				</Link>
 			)}
-			{user && <Link href={'api/auth/logout'}>Logout</Link>}
+			{user && (
+				<Link
+					className='lg:ml-10'
+					href={'api/auth/logout'}>
+					Logout
+				</Link>
+			)}
 
 			<Image
 				alt='avatar'
@@ -47,7 +53,11 @@ const Footer = () => {
 				}
 			/>
 			{user?.name === 'Mramoer' ? (
-				<Link href={'/add-post'}>Создать новый пост</Link>
+				<Link
+					href={'/add-post'}
+					className='ml-3 lg:ml-5'>
+					<Plus />
+				</Link>
 			) : (
 				''
 			)}

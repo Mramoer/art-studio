@@ -15,7 +15,6 @@ export const POST = async (req: NextRequest) => {
 		) as unknown as string;
 		const title: string | undefined = data.get('title') as unknown as string;
 		const tags: string | undefined = data.get('tags') as unknown as string;
-		const parsedTags = JSON.parse(tags as string);
 
 		console.log(title, description, file, tags);
 		if (!file) {
@@ -53,7 +52,7 @@ export const POST = async (req: NextRequest) => {
 				title,
 				description,
 				content: uploadResult.secure_url,
-				tags: parsedTags,
+				tags: tags,
 			},
 		});
 

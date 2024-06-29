@@ -5,6 +5,7 @@ import type { Tag } from '../../../node_modules/react-tag-input/types/components
 import { useUser } from '@auth0/nextjs-auth0/client';
 
 import Link from 'next/link';
+import { ArrowLeft } from '@geist-ui/icons';
 
 const PictureForm = () => {
 	const { user } = useUser();
@@ -68,48 +69,70 @@ const PictureForm = () => {
 	};
 
 	return (
-		<div>
-			{user?.name === 'Mramoer' ? (
-				<form onSubmit={handleSubmit}>
-					<p>
-						<label htmlFor='name'>Название:</label>
-						<input
-							value={title}
-							onChange={handleName}
-							type='text'
-						/>
-					</p>
-					<p>
-						<label htmlFor='description'>Описание:</label>
-						<textarea
-							value={description}
-							onChange={handleDescription}
-						/>
-					</p>
-					<p>
-						<label htmlFor='file'>Выбрать файл:</label>
-						<input
-							name='file'
-							ref={fileInputRef}
-							type='file'
-						/>
-					</p>
-					<button type='submit'>Опубликовать</button>
-					<ReactTags
-						tags={tags}
-						handleDelete={handleDelete}
-						handleAddition={handleAddition}
-						inputFieldPosition='inline'
-						autocomplete
+		<>
+			<div className='w-full bg-black h-10'>
+				<Link href='/'>
+					<ArrowLeft
+						size={40}
+						className='ml-1'
+						color='white'
 					/>
-				</form>
-			) : (
-				<>
-					<h1>У вас нет прав администратора для этого</h1>
-					<Link href={'/'}>Вернуться</Link>
-				</>
-			)}
-		</div>
+				</Link>
+			</div>
+			<div className='absolute m-5 top-[25%] min-h-[35%] lg:left-[25%] border-solid border-black border lg:w-[50%] rounded-md'>
+				{user?.name === 'Mramoer' ? (
+					<form
+						onSubmit={handleSubmit}
+						className='flex flex-col space-y-4 p-2'>
+						<p>
+							<label htmlFor='name'>Название:</label>
+							<input
+								className='border border-black ml-3'
+								value={title}
+								onChange={handleName}
+								type='text'
+							/>
+						</p>
+						<p>
+							<label htmlFor='description'>Описание:</label>
+							<textarea
+								className='border border-black ml-3'
+								value={description}
+								onChange={handleDescription}
+							/>
+						</p>
+						<p>
+							<label htmlFor='file'>Выбрать файл:</label>
+							<input
+								className='hover:cursor-pointer'
+								name='file'
+								ref={fileInputRef}
+								type='file'
+							/>
+						</p>
+						<ReactTags
+							placeholder='Введите новый тег'
+							name='reactTag'
+							tags={tags}
+							handleDelete={handleDelete}
+							handleAddition={handleAddition}
+							inputFieldPosition='inline'
+							autocomplete
+						/>
+						<button
+							type='submit'
+							className='hover:bg-gray-400 p-2 ease-in transition-colors rounded-md box-border m-auto '>
+							Опубликовать
+						</button>
+					</form>
+				) : (
+					<>
+						<h1>У вас нет прав администратора для этого</h1>
+						<Link href={'/'}>Вернуться</Link>
+					</>
+				)}
+			</div>
+		</>
 	);
 };
 
