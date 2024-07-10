@@ -20,4 +20,5 @@ model Post {
   description String
   content   String
   tags String
+  isDeleted Boolean @default(false)
 }

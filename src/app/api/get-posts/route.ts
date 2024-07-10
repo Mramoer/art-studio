@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-import type { NextApiResponse, NextApiRequest } from 'next';
 
 const prisma = new PrismaClient();
 
@@ -24,10 +23,6 @@ export const POST = async (req: NextRequest) => {
 		const blob = new Blob([fileBytes], { type: file.type });
 
 		console.log('Received:', { title, description, file, tags });
-
-		if (!file) {
-			throw new Error('No file uploaded');
-		}
 
 		const formDataCloudinary = new FormData();
 		formDataCloudinary.append('file', blob, file.name);

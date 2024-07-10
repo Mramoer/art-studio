@@ -3,6 +3,7 @@ import React, { useState, ChangeEvent, FormEvent, useRef } from 'react';
 import { WithContext as ReactTags } from 'react-tag-input';
 import type { Tag } from '../../../node_modules/react-tag-input/types/components/SingleTag.d.ts';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 import { ArrowLeft } from '@geist-ui/icons';
@@ -13,6 +14,7 @@ const PictureForm = () => {
 	const [title, setTitle] = useState<string>('');
 	const [description, setDescription] = useState<string>('');
 	const [tags, setTags] = React.useState<Tag[]>([]);
+	const router = useRouter();
 
 	const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setDescription(e.target.value);
@@ -62,10 +64,10 @@ const PictureForm = () => {
 		} catch (error: any) {
 			console.error('Error submitting form:', error.message);
 		}
-
 		if (fileInputRef.current) {
 			fileInputRef.current.value = '';
 		}
+		router.push('/');
 	};
 
 	return (
