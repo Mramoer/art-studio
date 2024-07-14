@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { PostProvider } from './context/context';
 
 const inter = Roboto({ weight: ['300'], subsets: ['latin'] });
 
@@ -22,9 +23,11 @@ export default function RootLayout({
 					src='https://telegram.org/js/telegram-web-app.js'
 					async></script>
 			</head>
-			<UserProvider>
-				<body className={inter.className}>{children}</body>
-			</UserProvider>
+			<PostProvider>
+				<UserProvider>
+					<body className={inter.className}>{children}</body>
+				</UserProvider>
+			</PostProvider>
 		</html>
 	);
 }
