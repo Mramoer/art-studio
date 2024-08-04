@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 import { ArrowLeft } from '@geist-ui/icons';
-
 const PictureForm = () => {
 	const { user } = useUser();
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,6 +29,17 @@ const PictureForm = () => {
 
 	const handleDelete = (i: number) => {
 		setTags(tags.filter((tag, index) => index !== i));
+	};
+	const fileValidation = () => {
+		const filePath = fileInputRef.current;
+		const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+		if (filePath) {
+			if (!allowedExtensions.exec(filePath.value)) {
+				alert('Invalid file type');
+				filePath.value = '';
+				return false;
+			}
+		}
 	};
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -89,7 +99,8 @@ const PictureForm = () => {
 						<p>
 							<label htmlFor='name'>Название:</label>
 							<input
-								className='border border-black ml-3'
+								id='file'
+								className='border border-black ml-3 active:border-none outline-none pl-1'
 								value={title}
 								onChange={handleName}
 								type='text'
@@ -98,7 +109,7 @@ const PictureForm = () => {
 						<p>
 							<label htmlFor='description'>Описание:</label>
 							<textarea
-								className='border border-black ml-3'
+								className='border border-black ml-3 resize-none active:border-none outline-none pl-1'
 								value={description}
 								onChange={handleDescription}
 							/>
@@ -110,6 +121,10 @@ const PictureForm = () => {
 								name='file'
 								ref={fileInputRef}
 								type='file'
+								accept='.jpg, .jpeg, .png'
+								onChange={() => {
+									fileValidation();
+								}}
 							/>
 						</p>
 						<ReactTags

@@ -3,10 +3,12 @@ import Image from 'next/image';
 import { Delete, Plus, Search, LogIn, LogOut, Trash2 } from '@geist-ui/icons';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { usePostContext } from '../context/context';
 
 const Footer = () => {
+	const router = useRouter();
 	const { user } = useUser();
 	const [filter, setFilter] = useState('');
 	const { postTags, setPostTags } = usePostContext();
@@ -52,6 +54,7 @@ const Footer = () => {
 		} catch (error) {
 			console.log('failed to delete posts', error);
 		}
+		router.refresh();
 	};
 
 	return (
@@ -73,9 +76,7 @@ const Footer = () => {
 				/>
 			</div>
 
-			<form
-				action=''
-				className='flex items-center w-[50%] md:w-[30%]'>
+			<form className='flex items-center w-[50%] md:w-[30%]'>
 				<input
 					className='text-black xsm:w-[80%] active:border-none outline-none pl-2'
 					type='text'
